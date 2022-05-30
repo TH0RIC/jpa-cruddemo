@@ -1,54 +1,68 @@
 package com.springboot.crud.cruddemo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.crud.cruddemo.dao.EmployeeDAO;
+import com.springboot.crud.cruddemo.dao.EmployeeRepository;
 import com.springboot.crud.cruddemo.entity.Employee;
 
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 	
-	private EmployeeDAO employeeDao;
+	private EmployeeRepository employeeRepository;
 	
 	@Autowired
-	public EmployeeServiceImpl(@Qualifier("employeeDAOJpaImpl") EmployeeDAO employeeDao) {
-		this.employeeDao = employeeDao;
+	public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository) {
+		employeeRepository = theEmployeeRepository;
 	}
 
 	@Override
-	@Transactional
 	public List<Employee> findAll() {
 		// TODO Auto-generated method stub
-		return employeeDao.findAll();
+		return employeeRepository.findAll();
 	}
 
 	@Override
-	@Transactional
 	public void save(Employee employee) {
 	
-		employeeDao.save(employee);
+		employeeRepository.save(employee);
 		
 	}
 
 	@Override
-	@Transactional
 	public void delete(int theId) {
 		
-		employeeDao.deleteById(theId);
+		employeeRepository.deleteById(theId);
 	
 	}
 
 	@Override
-	@Transactional
 	public Employee findById(int theId) {
-	
-		return employeeDao.findById(theId);
+		
+		
+		// Optional : Java8 new feature instead of checking for nulls
+		Optional<Employee> result = employeeRepository.findById(theId);
+		
+		Employee theEmployee=null;
+		
+		if(result.isPresent()) {
+			
+			theEmployee=result.get();
+			
+		}else {
+			
+			throw new RuntimeException("Did not find employee id -"+theId);
+			
+		}
+		
+		
+		return theEmployee;
 	}
 	
 	
